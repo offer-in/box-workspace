@@ -1,3 +1,6 @@
 [submodule "java/box-keycloak"]
 	path = java/box-keycloak
 	url = git@github.com:offer-in/box-keycloak.git
+[submodule "box-bff"]
+	path = box-bff
+	url = git@github.com:offer-in/box-bff.git
