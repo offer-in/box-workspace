@@ -1,0 +1,25 @@
+services:
+  verdaccio:
+    image: verdaccio/verdaccio:6.5
+    container_name: verdaccio
+    restart: unless-stopped
+    ports:
+      - "4873:4873"
+    volumes:
+      - verdaccio_storage:/verdaccio/storage
+
+  postgres:
+    image: postgres:16-alpine
+    container_name: box-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: box-db
+      POSTGRES_PASSWORD: postgres
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+volumes:
+  verdaccio_storage:
+  postgres_data:
