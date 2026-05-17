@@ -5,10 +5,15 @@ services:
   box-bff:
     build:
       context: ./box-bff
-      target: production
+      # dev -> MUST use `env:dev`, or frontend (public/) not shown
+      # debug | production -> MUST use `env:stg`
+      target: dev
     container_name: box-bff
     restart: unless-stopped
     env_file: ./box-bff/.env
+    volumes:
+      - ./box-bff:/app
+      - bff_node_modules:/app/node_modules
 
   caddy:
     image: caddy:2.11.2-alpine
@@ -27,3 +32,4 @@ services:
 volumes:
   caddy_data:
   caddy_config:
+  bff_node_modules:
