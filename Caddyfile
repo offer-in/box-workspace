@@ -1,0 +1,3 @@
+test1.boobareth.com {
+  reverse_proxy box-bff:7860
+}

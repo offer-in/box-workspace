@@ -1,0 +1,29 @@
+include:
+  - docker-compose.base.yml
+
+services:
+  box-bff:
+    build:
+      context: ./box-bff
+      target: production
+    container_name: box-bff
+    restart: unless-stopped
+    env_file: ./box-bff/.env
+
+  caddy:
+    image: caddy:2.11.2-alpine
+    container_name: caddy
+    restart: unless-stopped
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile:ro
+      - caddy_data:/data
+      - caddy_config:/config
+    depends_on:
+      - box-bff
+
+volumes:
+  caddy_data:
+  caddy_config:
