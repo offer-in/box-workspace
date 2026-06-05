@@ -7,3 +7,6 @@
 [submodule "packages/rntk-ui"]
 	path = packages/rntk-ui
 	url = git@github.com:offer-in/rntk-ui.git
+[submodule "apps/box-mobile"]
+	path = apps/box-mobile
+	url = git@github.com:offer-in/box-mobile.git
