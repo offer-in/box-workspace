@@ -11,6 +11,46 @@ docker compose -f docker-compose.dev.yml down
 docker compose -f docker-compose.dev.yml restart caddy
 ```
 
+### Database
+
+Load the `box` helper once per terminal session:
+
+```sh
+source ./scripts/box-cmd.sh
+```
+
+| Command        | What it does                  |
+| -------------- | ----------------------------- |
+| `box`          | Interactive menu              |
+| `box migrate`  | Run pending SQL migrations    |
+| `box seed`     | Add test users                |
+| `box db_reset` | Wipe postgres and start fresh |
+| `box help`     | Show commands                 |
+
+**First-time setup** (after docker is running):
+
+```sh
+source ./scripts/box-cmd.sh
+box migrate
+box seed
+```
+
+**Start over** (deletes all data):
+
+```sh
+box db_reset
+box migrate
+box seed
+```
+
+`box seed` creates three users with password `password123`:
+
+- `alice@example.com` (verified)
+- `bob@example.com` (verified)
+- `charlie@example.com` (not verified)
+
+You can also run the scripts directly: `./scripts/db/migrate.sh`, `./scripts/db/seed.sh`, `./scripts/db/reset_db.sh`.
+
 ### Verdaccio
 
 - Dev: http://localhost:4873
