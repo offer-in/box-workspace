@@ -27,6 +27,10 @@ services:
       retries: 5
     volumes:
       - postgres_data:/var/lib/postgresql/data
+      # Init scripts run once, only on a fresh data volume. Provisions the
+      # `kc` (Keycloak / KC_DB_SCHEMA) and `bff` (Drizzle target) schemas
+      # since neither app creates its own schema at boot.
+      - ./ops/postgres/init:/docker-entrypoint-initdb.d:ro
     profiles:
       - backend
       - db
@@ -69,6 +73,9 @@ services:
       KC_DB_URL: jdbc:postgresql://postgres:${DB_PORT}/${DB_NAME}
       KC_DB_USERNAME: ${DB_USER}
       KC_DB_PASSWORD: ${DB_PASSWORD}
+      # Keep KC tables out of `public`. Schema is pre-created by
+      # ops/postgres/init/01-kc-schema.sql on first volume init.
+      KC_DB_SCHEMA: kc
       # https configs
       KC_HOSTNAME: test1.boobareth.com
       KC_PROXY: edge

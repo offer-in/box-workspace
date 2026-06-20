@@ -13,3 +13,11 @@ backend-down *FLAGS:
 [doc("Build & start backend stack (docker compose up -d --build, profile=backend)")]
 backend-up:
 	docker compose --env-file ops/.env -f ops/docker-compose.yml --profile backend --project-directory . up -d --build
+
+# Wipe ONLY the postgres volume (leaves nginx_secrets / LE certs intact).
+# Use this when you need a fresh DB — e.g. after changing KC_DB_SCHEMA so the
+# init script in ops/postgres/init/ re-runs.
+[doc("Wipe postgres_data volume only (nginx_secrets preserved)")]
+backend-wipe-db:
+	docker compose --env-file ops/.env -f ops/docker-compose.yml --profile backend --project-directory . rm -sfv postgres
+	docker volume rm box-workspace_postgres_data
