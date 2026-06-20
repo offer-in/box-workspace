@@ -3,4 +3,7 @@
 
 containers/identity
 
+.env*
+!.env.example
+
 temporary

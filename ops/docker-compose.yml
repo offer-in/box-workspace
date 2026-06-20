@@ -15,28 +15,110 @@ services:
     container_name: box-postgres
     restart: unless-stopped
     environment:
-      POSTGRES_DB: box-db
-      POSTGRES_PASSWORD: postgres
+      POSTGRES_USER: ${DB_USER}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+      POSTGRES_DB: ${DB_NAME}
     ports:
-      - "5432:5432"
+      - "${DB_PORT}:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${DB_USER} -d ${DB_NAME}"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
     volumes:
       - postgres_data:/var/lib/postgresql/data
     profiles:
       - backend
       - db
 
-    box-bff:
-      build:
-        context: ./apps/box-bff
-        # dev -> MUST use `env:dev`, or frontend (public/) not shown
-        # debug | production -> MUST use `env:stg`
-        target: dev
-      container_name: box-bff
-      restart: unless-stopped
-      env_file: ./apps/box-bff/.env
-      volumes:
-        - ./apps/box-bff:/app
+  box-bff:
+    build:
+      context: ./apps/box-bff
+      # dev -> MUST use `env:dev`, or frontend (public/) not shown
+      # debug | production -> MUST use `env:stg`
+      target: dev
+    container_name: box-bff
+    restart: unless-stopped
+    env_file: ./apps/box-bff/.env
+    environment:
+      # Overrides the hard-coded creds in src/config/constants.ts.
+      DB_URI: ${DB_URI}
+    ports:
+      - "7860:7860"
+    volumes:
+      - ./apps/box-bff:/app
+    profiles:
+      - backend
+
+  keycloak:
+    build:
+      context: ./java/box-keycloak
+    container_name: box-keycloak
+    restart: unless-stopped
+    environment:
+      KC_BOOTSTRAP_ADMIN_USERNAME: admin
+      KC_BOOTSTRAP_ADMIN_PASSWORD: admin
+      KC_HEALTH_ENABLED: "true"
+      KC_HTTP_ENABLED: "true"
+      # KC_HOSTNAME_STRICT: "false"
+      # KC_DB is the database *type/driver* (postgres|mysql|mariadb|...), not the
+      # database *name*. The DB name lives in KC_DB_URL.
+      KC_DB: postgres
+      # Postgres JDBC doesn't accept userinfo in the URL, so we can't reuse
+      # DB_URI directly — creds come via KC_DB_USERNAME/PASSWORD instead.
+      KC_DB_URL: jdbc:postgresql://postgres:${DB_PORT}/${DB_NAME}
+      KC_DB_USERNAME: ${DB_USER}
+      KC_DB_PASSWORD: ${DB_PASSWORD}
+      # https configs
+      KC_HOSTNAME: test1.boobareth.com
+      KC_PROXY: edge
+      KC_PROXY_HEADERS: xforwarded
+      KC_HOSTNAME_STRICT: "true"
+      # Keycloak serves itself under /kc so the nginx /kc/* location can
+      # pass requests through without rewriting paths in the response HTML.
+      KC_HTTP_RELATIVE_PATH: /kc
+      # KC_HOSTNAME_STRICT_HTTPS: "false"
+    ports:
+      - "8080:8080"
+      - "9000:9000" # health check
+    depends_on:
+      postgres:
+        condition: service_healthy
+    command: start-dev
+    profiles:
+      - backend
+
+  nginx:
+    # Bundles nginx + certbot in a single container. On startup it parses the
+    # nginx configs, calls certbot to obtain/renew any referenced LE certs
+    # (HTTP-01 challenge on port 80), then reloads nginx. Renewal runs on a
+    # cron loop inside the container.
+    image: jonasal/nginx-certbot:5-alpine
+    container_name: box-nginx
+    restart: unless-stopped
+    environment:
+      # TODO: set to a real address — Let's Encrypt sends expiry warnings here.
+      CERTBOT_EMAIL: admin@boobareth.com
+      # Set USE_LOCAL_CA=1 to issue a self-signed cert via a built-in local CA
+      # instead of contacting Let's Encrypt — useful when port 80 isn't yet
+      # reachable from the public internet. With port 80 forwarded + DNS
+      # resolving publicly, leave this unset so real LE certs are issued.
+      # USE_LOCAL_CA: "1"
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      # Path is resolved against --project-directory, which is the repo root
+      # when this compose file is invoked from there.
+      - ./ops/nginx/conf.d:/etc/nginx/user_conf.d:ro
+      - nginx_secrets:/etc/letsencrypt
+    depends_on:
+      - keycloak
+      - box-bff
+    profiles:
+      - backend
 
 volumes:
   verdaccio_storage:
   postgres_data:
+  nginx_secrets:
