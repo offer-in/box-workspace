@@ -7,6 +7,8 @@ services:
       - "4873:4873"
     volumes:
       - verdaccio_storage:/verdaccio/storage
+    profiles:
+      - "verdaccio"
 
   postgres:
     image: postgres:16-alpine
@@ -19,6 +21,21 @@ services:
       - "5432:5432"
     volumes:
       - postgres_data:/var/lib/postgresql/data
+    profiles:
+      - backend
+      - db
+
+    box-bff:
+      build:
+        context: ./apps/box-bff
+        # dev -> MUST use `env:dev`, or frontend (public/) not shown
+        # debug | production -> MUST use `env:stg`
+        target: dev
+      container_name: box-bff
+      restart: unless-stopped
+      env_file: ./apps/box-bff/.env
+      volumes:
+        - ./apps/box-bff:/app
 
 volumes:
   verdaccio_storage:
