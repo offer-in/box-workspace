@@ -11,6 +11,18 @@
     "figma": {
       "type": "http",
       "url": "https://mcp.figma.com/mcp"
+    },
+    "maestro": {
+      "command": "maestro",
+      "args": ["mcp"]
+    },
+    "expo": {
+      "url": "https://mcp.expo.dev/mcp",
+      "headers": {}
+    },
+    "browsermcp": {
+      "command": "bunx",
+      "args": ["@browsermcp/mcp@latest"]
     }
   }
 }

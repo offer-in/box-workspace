@@ -1,0 +1,58 @@
+---
+description: Feature workflow — Superpowers, CodeGraph, DeepWiki/Context7, verification
+alwaysApply: true
+---
+
+# Feature Development Operating Contract
+
+Follow this workflow for non-trivial features, refactors, and bugfixes unless the user explicitly opts out.
+
+Never run `git commit`, or any command that creates a commit. Only the user may commit.
+
+## 1. Superpowers lifecycle
+
+Use Superpowers skills in order:
+
+| Phase   | Skill                                                                   |
+| ------- | ----------------------------------------------------------------------- |
+| Design  | `brainstorming` — clarify intent and approach before coding             |
+| Plan    | `writing-plans` — multi-step work gets a written plan first             |
+| Execute | `executing-plans` or `subagent-driven-development` — one task at a time |
+| Verify  | `verification-before-completion` — run checks before claiming done      |
+| Review  | `requesting-code-review` — after major steps or before merge            |
+
+Small hotfixes may skip planning; still verify before completion.
+
+## 2. Local code: CodeGraph first
+
+Before grep/read loops for understanding, dependency tracing, impact analysis, or finding affected tests:
+
+1. Call `codegraph_explore` with the relevant `projectPath` (submodule root when applicable).
+2. Fall back to Read/Grep only when CodeGraph has no index or returns insufficient results.
+
+## 3. External dependencies: DeepWiki → Context7
+
+When touching a third-party library, SDK, or external repo:
+
+1. **DeepWiki first** — repo architecture, patterns, and public API surface.
+2. **Context7** only when DeepWiki is insufficient, the API is version-sensitive, or the user explicitly requests Context7.
+
+## 4. Cite the source before coding
+
+Before writing code that depends on external or unfamiliar APIs, state which source informed the approach:
+
+- **Local code** — CodeGraph / codebase exploration
+- **DeepWiki** — which repo or topic
+- **Context7** — which library and why DeepWiki was not enough
+
+Example: _"Consulted DeepWiki for `expo-av` playback lifecycle; local `audioManager.ts` via CodeGraph for app conventions."_
+
+## 5. Small tasks, explicit verification
+
+- Break work into small, independently verifiable tasks.
+- After each task, run the relevant check (test, typecheck, lint, or manual step) before moving on.
+- Do not batch multiple tasks and verify only at the end.
+
+## 6. Where you are & what's next
+
+End non-trivial feature turns by reading the active Superpowers skill's flow/checklist: state current step (N/M) and list next actions — skill to invoke, or prompt for the user.

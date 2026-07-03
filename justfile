@@ -21,3 +21,11 @@ backend-up:
 backend-wipe-db:
 	docker compose --env-file ops/.env -f ops/docker-compose.yml --profile backend --project-directory . rm -sfv postgres
 	docker volume rm box-workspace_postgres_data
+
+# Build and start the verdaccio docker compose stack in detached mode.
+verdaccio-up:
+	docker compose --env-file ops/.env -f ops/docker-compose.yml --profile verdaccio --project-directory . up -d --build
+
+# Tear down the verdaccio docker compose stack.
+verdaccio-down:
+	docker compose --env-file ops/.env -f ops/docker-compose.yml --profile verdaccio --project-directory . down
