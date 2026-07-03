@@ -13,19 +13,23 @@ clonable and runnable on its own — do not introduce cross-submodule source dep
 
 When working inside a submodule, follow its own `AGENTS.md`.
 
-## Development workflow: Comet (Spec-Driven Development)
+## Development workflow: OpenSpec (Spec-Driven Development)
 
-Non-trivial changes go through [Comet](https://github.com/rpamis/comet) — a phase-guarded
-SDD harness (installed for **Cursor** only) that chains
-[OpenSpec](https://github.com/Fission-AI/openspec) (the *what*: specs/proposals) with
-[Superpowers](https://github.com/obra/superpowers) (the *how*: brainstorming, TDD,
-subagent-driven development).
+Non-trivial changes go through [OpenSpec](https://github.com/Fission-AI/openspec) — the
+*what*: specs and proposals. Drive it with the OpenSpec skills:
 
-- **Start non-trivial work with `/comet`** — it detects the phase and drives the flow:
-  open → design → build → verify → archive (`/comet-hotfix` / `/comet-tweak` for small changes).
-- Specs & changes live in `openspec/`; per-change state in `.comet.yaml`; config in `.comet/config.yaml`.
-- The always-on `comet-phase-guard` rule and `.cursor/skills/` are the source of truth —
-  don't hand-edit `.comet.yaml`; go through the Comet skills/scripts.
+- **`openspec-explore`** — think through an idea before committing to a change.
+- **`openspec-propose`** — create a change with design, specs, and tasks in one step.
+- **`openspec-apply-change`** — implement the tasks from a change.
+- **`openspec-sync-specs`** / **`openspec-archive-change`** — fold deltas into main specs, then finalize.
+
+Specs & changes live in `openspec/`.
+
+## Code intelligence: CodeGraph
+
+[CodeGraph](https://github.com/colbymchenry/codegraph) indexes the codebase into a
+queryable graph. Use it to navigate and understand cross-file relationships before
+making changes.
 
 ## Tooling: Bun only
 
@@ -52,4 +56,11 @@ Postgres provisions the `bff` and `kc` schemas on first boot (`ops/postgres/init
 
 ## MCP
 
-`context7`, `deepwiki`, `figma` are configured in `.mcp.json`.
+Configured in `.mcp.json`:
+
+- `context7` — up-to-date library/framework docs.
+- `deepwiki` — AI docs & Q&A for GitHub repos.
+- `figma` — read/write Figma designs (design ↔ code).
+- `maestro` — author & run mobile/web UI tests.
+- `expo` — Expo tooling & docs.
+- `browsermcp` — drive a browser (navigate, click, screenshot).
