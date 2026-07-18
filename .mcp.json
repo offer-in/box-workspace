@@ -8,21 +8,32 @@
       "type": "http",
       "url": "https://mcp.deepwiki.com/mcp"
     },
-    "figma": {
-      "type": "http",
-      "url": "https://mcp.figma.com/mcp"
-    },
     "maestro": {
       "command": "maestro",
-      "args": ["mcp"]
+      "args": [
+        "mcp"
+      ]
     },
     "expo": {
+      "type": "http",
       "url": "https://mcp.expo.dev/mcp",
       "headers": {}
     },
     "browsermcp": {
       "command": "bunx",
-      "args": ["@browsermcp/mcp@latest"]
+      "args": [
+        "@browsermcp/mcp@latest"
+      ]
+    },
+    "contentful": {
+      "type": "http",
+      "url": "https://mcp.contentful.com/mcp"
+    },
+    "heroui-native": {
+      "command": "bunx",
+      "args": [
+        "@heroui/native-mcp@latest"
+      ]
     }
   }
 }
