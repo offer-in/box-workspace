@@ -13,18 +13,6 @@ clonable and runnable on its own — do not introduce cross-submodule source dep
 
 When working inside a submodule, follow its own `AGENTS.md`.
 
-## Development workflow: OpenSpec (Spec-Driven Development)
-
-Non-trivial changes go through [OpenSpec](https://github.com/Fission-AI/openspec) — the
-*what*: specs and proposals. Drive it with the OpenSpec skills:
-
-- **`openspec-explore`** — think through an idea before committing to a change.
-- **`openspec-propose`** — create a change with design, specs, and tasks in one step.
-- **`openspec-apply-change`** — implement the tasks from a change.
-- **`openspec-sync-specs`** / **`openspec-archive-change`** — fold deltas into main specs, then finalize.
-
-Specs & changes live in `openspec/`.
-
 ## Code intelligence: CodeGraph
 
 [CodeGraph](https://github.com/colbymchenry/codegraph) indexes the codebase into a

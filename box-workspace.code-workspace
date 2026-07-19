@@ -1,0 +1,20 @@
+{
+	"folders": [
+		{
+			"path": "."
+		},
+		{
+			"path": "./apps/box-mobile"
+		},
+		{
+			"path": "./apps/box-bff"
+		},
+		{
+			"path": "./packages/rntk-ui"
+		},
+		{
+			"path": "./ops"
+		}
+	],
+	"settings": {}
+}

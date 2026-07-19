@@ -1,0 +1,89 @@
+---
+description: >-
+  Export hygiene — never export unused symbols; test-only symbols go under
+  testOnly. Apply whenever adding/changing exports in TS/TSX.
+alwaysApply: true
+---
+
+# Export rules
+
+**Hard gate:** Before finishing any edit that adds or changes an `export`, verify
+every exported symbol against this file. Skipping this check is a rule violation.
+
+## 1. No unused exports
+
+Do **not** export a symbol unless another **production** file imports it
+(outside this module). Tests do **not** count as justification for a public
+export.
+
+| Situation | Action |
+| --- | --- |
+| Only used inside this file | Do not export (module-private) |
+| Used by other production files | Export normally |
+| Needed by unit tests only | `testOnly` (section 2) — never a bare `export` |
+| Re-exported from a barrel (`index.ts`) | Only re-export what external callers import from that barrel |
+
+```typescript
+// ❌ BAD — nothing outside this file imports it
+export type AppUpdateNudgeFlag = { ... };
+export const testIDs = { ... };
+
+// ✅ GOOD — stay private
+type AppUpdateNudgeFlag = { ... };
+const testIDs = { ... } as const;
+```
+
+Barrel example:
+
+```typescript
+// ❌ BAD — re-exports unused by @app/features/foo consumers
+export { helper, type InternalState } from "./internal";
+
+// ✅ GOOD — only what Providers / screens import from the package
+export { FooScreen } from "./FooScreen";
+```
+
+## 2. Test-only access → `testOnly`
+
+Never export a symbol **solely** so tests can reach it. Keep it private, then
+expose under `testOnly`:
+
+```typescript
+function parseAppUpdateNudgePayload(raw: unknown): Payload | null {
+  // ...
+}
+
+/** Reachable from tests only — not part of the public API. */
+export const testOnly = {
+  parseAppUpdateNudgePayload,
+};
+```
+
+In tests:
+
+```typescript
+import { testOnly } from "@app/features/posthog/hooks";
+
+testOnly.parseAppUpdateNudgePayload(...);
+```
+
+```typescript
+// ❌ BAD — looks public; tests importing it still violate this rule
+export function parseAppUpdateNudgePayload(...) { ... }
+
+// ❌ BAD — underscore export is still public API
+export function _parseAppUpdateNudgePayload(...) { ... }
+```
+
+Prefer testing through the public surface when enough; use `testOnly` only when
+internals need direct coverage.
+
+## 3. Mandatory checklist (before claiming done)
+
+For each `export` / `export type` / barrel re-export you touched or added:
+
+1. Grep (or CodeGraph) for importers **outside** this file.
+2. If **zero** production importers → un-export or move to `testOnly`.
+3. If the only importers are under `src/__tests__/` / `*.test.*` → must be
+   `testOnly`, not a top-level export.
+4. Do not leave “might be useful later” exports.
