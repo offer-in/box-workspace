@@ -38,19 +38,19 @@ services:
   box-bff:
     build:
       context: ./apps/box-bff
-      # dev -> MUST use `env:dev`, or frontend (public/) not shown
-      # debug | production -> MUST use `env:stg`
-      target: dev
+      # local -> bun env:local (.env.local on the bind mount)
+      # development / staging are not compose services; see apps/box-bff/justfile
+      target: local
     container_name: box-bff
     restart: unless-stopped
-    env_file: ./apps/box-bff/.env
     environment:
-      # Overrides the hard-coded creds in src/config/constants.ts.
+      # Overrides DB host for the compose network (ops/.env).
       DB_URI: ${DB_URI}
     ports:
       - "7860:7860"
     volumes:
       - ./apps/box-bff:/app
+      - box_bff_node_modules:/app/node_modules
     profiles:
       - backend
 
@@ -129,3 +129,4 @@ volumes:
   verdaccio_storage:
   postgres_data:
   nginx_secrets:
+  box_bff_node_modules:
