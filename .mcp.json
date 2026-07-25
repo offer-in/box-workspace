@@ -10,20 +10,17 @@
     },
     "maestro": {
       "command": "maestro",
-      "args": [
-        "mcp"
-      ]
+      "args": ["mcp"]
     },
     "expo": {
       "type": "http",
       "url": "https://mcp.expo.dev/mcp",
       "headers": {}
     },
-    "browsermcp": {
-      "command": "bunx",
-      "args": [
-        "@browsermcp/mcp@latest"
-      ]
+    "wigolo": {
+      "command": "npx",
+      "args": ["-y", "wigolo"],
+      "envFile": "${userHome}/.wigolo/.env"
     },
     "contentful": {
       "type": "http",
@@ -31,9 +28,7 @@
     },
     "heroui-native": {
       "command": "bunx",
-      "args": [
-        "@heroui/native-mcp@latest"
-      ]
+      "args": ["@heroui/native-mcp@latest"]
     }
   }
 }
