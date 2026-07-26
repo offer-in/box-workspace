@@ -43,6 +43,9 @@ services:
       target: local
     container_name: box-bff
     restart: unless-stopped
+    environment:
+      # Overrides DB host for the compose network (ops/.env).
+      DB_URI: ${DB_URI}
     ports:
       - "7860:7860"
     volumes:

@@ -7,7 +7,24 @@ alwaysApply: true
 
 Follow this workflow for non-trivial features, refactors, and bugfixes unless the user explicitly opts out.
 
-Never run `git commit`, or any command that creates a commit. Only the user may commit.
+## 0. Git commit hard gate (non-negotiable)
+
+**Default: do not commit.** Never run `git commit`, `git commit --amend`, or any command that creates a git commit unless the **current user message** contains an explicit commit request (e.g. “commit”, “create a commit”, “git commit”, “commit and push”).
+
+If unclear → **ask**, then wait. Do not commit while waiting.
+
+**Never** treat these as permission to commit:
+
+| Situation | Action |
+| --- | --- |
+| “fix it”, “fix it on your own”, “do whatever it takes” | Edit / verify only — **no commit** |
+| “deploy”, staging/CI needs a SHA, “so Render builds” | Leave changes uncommitted; user must commit/push |
+| “continue”, “yes”, “ship it”, “finish the ticket” | **no commit** unless they also say commit |
+| Smart-mode / tool approval for secrets, network, or push | Approving another action ≠ approving commit |
+| User rules that describe *how* to commit when asked | Apply **only after** an explicit ask in this turn |
+| AutoDeploy / “verify on staging” | **no commit**; say verification waits on their commit/push |
+
+Read-only git (`status` / `diff` / `log`) is fine. `git push` only if they explicitly asked to push — still **no** commit unless they also asked to commit.
 
 ## 1. Superpowers lifecycle
 

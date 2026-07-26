@@ -29,6 +29,13 @@
     "heroui-native": {
       "command": "bunx",
       "args": ["@heroui/native-mcp@latest"]
+    },
+    "render": {
+      "url": "https://mcp.render.com/mcp",
+      "auth": {
+        "CLIENT_ID": "cursor"
+      },
+      "headers": {}
     }
   }
 }
