@@ -1,8 +1,6 @@
 # Box workspace
 
-Monorepo of **independent git submodules**. Each submodule is its own repo and must be
-clonable and runnable on its own — do not introduce cross-submodule source dependencies.
-(`box-mobile` consumes `@rntk/ui` only as a published registry package, never as a source link.)
+Monorepo of **independent git submodules**, see `.gitmodules`. Work in the workspace (parent + siblings + `/ops`); each app is mostly runnable alone, with local infra/shared packages as needed.
 
 | Path | What | Stack | Status |
 |------|------|-------|--------|
@@ -12,6 +10,14 @@ clonable and runnable on its own — do not introduce cross-submodule source dep
 | `java/box-keycloak` | Keycloak auth SPI | Kotlin / Gradle | dormant POC |
 
 When working inside a submodule, follow its own `AGENTS.md`.
+
+## AI Harness
+
+Agents must follow the **AI Harness** principles in [`.cursor/rules/feature-development.mdc`](.cursor/rules/feature-development.mdc):
+
+**YAGNI · human-in-the-loop batches · bite-sized reviewable work · QA Playbook (e2e-verifiable chunks).**
+
+Change machinery is Superpowers (`brainstorming` → `writing-plans` → execute → verify) plus workspace skills `box-todo` / `box-finish`.
 
 ## Code intelligence: CodeGraph
 

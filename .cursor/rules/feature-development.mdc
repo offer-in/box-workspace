@@ -1,5 +1,5 @@
 ---
-description: Feature workflow — Superpowers, CodeGraph, DeepWiki/Context7, verification
+description: Feature workflow — AI Harness, Superpowers, CodeGraph, DeepWiki/Context7, verification
 alwaysApply: true
 ---
 
@@ -26,7 +26,38 @@ If unclear → **ask**, then wait. Do not commit while waiting.
 
 Read-only git (`status` / `diff` / `log`) is fine. `git push` only if they explicitly asked to push — still **no** commit unless they also asked to commit.
 
-## 1. Superpowers lifecycle
+## 1. AI Harness principles (non-negotiable)
+
+Behavioral contract for agents in this workspace. Superpowers + `box-todo` / `box-finish` are the change machinery. Root pointer: [`AGENTS.md`](../../AGENTS.md).
+
+| Principle | Rule |
+| --- | --- |
+| **YAGNI** | Only what the current approved spec/ticket needs. Specs/designs must list **Non-Goals**. No “for later” APIs, params, or abstractions in plans or code. |
+| **Human in the loop** | No implementation until design is approved. No execute until plan (or ticket AC) is approved. After each **batch** (3–5 plan tasks, or one ticket-sized chunk): report evidence, then **wait for OK** before the next batch. |
+| **One bite at a time** | Plan tasks small enough that a fresh reviewer could accept or reject one task without the rest. Prefer Superpowers `writing-plans` / `subagent-driven-development` sizing. |
+| **Reviewable + e2e QA** | Every user-visible or API-visible deliverable chunk needs a **QA Playbook**: ordered human steps with expected results (not only unit/`tsc` green). BFF → HTTP/`curl` steps; mobile → Maestro and/or UI steps with `testID`. Paste evidence before claiming done. |
+
+### Plans must include
+
+When writing Superpowers plans under `docs/superpowers/plans/`, include:
+
+```markdown
+## QA Playbook (human)
+Prereqs: …
+1. …
+2. …
+Expected: …
+```
+
+Ticket acceptance criteria (`box-todo`) must be the same shape: executable steps, not adjectives (“works”, “supports login”).
+
+### Batch anti-patterns
+
+- Finishing an entire plan/ticket stream before any human checkpoint
+- Claiming done with only `type-check` green
+- Expanding scope past Non-Goals without a new approval
+
+## 2. Superpowers lifecycle
 
 Use Superpowers skills in order:
 
@@ -38,23 +69,23 @@ Use Superpowers skills in order:
 | Verify  | `verification-before-completion` — run checks before claiming done      |
 | Review  | `requesting-code-review` — after major steps or before merge            |
 
-Small hotfixes may skip planning; still verify before completion.
+Small hotfixes may skip planning; still verify before completion and still respect §1 (YAGNI / QA when behavior changes).
 
-## 2. Local code: CodeGraph first
+## 3. Local code: CodeGraph first
 
 Before grep/read loops for understanding, dependency tracing, impact analysis, or finding affected tests:
 
 1. Call `codegraph_explore` with the relevant `projectPath` (submodule root when applicable).
 2. Fall back to Read/Grep only when CodeGraph has no index or returns insufficient results.
 
-## 3. External dependencies: DeepWiki → Context7
+## 4. External dependencies: DeepWiki → Context7
 
 When touching a third-party library, SDK, or external repo:
 
 1. **DeepWiki first** — repo architecture, patterns, and public API surface.
 2. **Context7** only when DeepWiki is insufficient, the API is version-sensitive, or the user explicitly requests Context7.
 
-## 4. Cite the source before coding
+## 5. Cite the source before coding
 
 Before writing code that depends on external or unfamiliar APIs, state which source informed the approach:
 
@@ -64,12 +95,13 @@ Before writing code that depends on external or unfamiliar APIs, state which sou
 
 Example: _"Consulted DeepWiki for `expo-av` playback lifecycle; local `audioManager.ts` via CodeGraph for app conventions."_
 
-## 5. Small tasks, explicit verification
+## 6. Small tasks, explicit verification
 
-- Break work into small, independently verifiable tasks.
-- After each task, run the relevant check (test, typecheck, lint, or manual step) before moving on.
+- Break work into small, independently verifiable tasks (§1 bite size).
+- After each task, run the relevant check (test, typecheck, lint, or QA Playbook step) before moving on.
 - Do not batch multiple tasks and verify only at the end.
+- After 3–5 tasks (or one ticket chunk), stop and ask the user before continuing (§1 HITL).
 
-## 6. Where you are & what's next
+## 7. Where you are & what's next
 
 End non-trivial feature turns by reading the active Superpowers skill's flow/checklist: state current step (N/M) and list next actions — skill to invoke, or prompt for the user.
